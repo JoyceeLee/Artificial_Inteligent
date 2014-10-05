@@ -1,0 +1,53 @@
+Resolution: α θ γ
+
+function PL-RESOLUTION (KB, α) return true or false
+	inputs: KB, α(query)
+
+	clauses <- the set of clauses in the CNF representation of KB Λ ¬ α
+	new <- { }
+	loop do
+		for each Ci, Cj in clauses do
+			resolvents <- PL-RESOLVE(Ci, Cj)
+			if resolvents contains the empty clause then return true
+			new <- new U resolvents
+		if new ⊆ clauses then return false
+		clauses <- clauses U new
+
+PL-RESOLVE(Ci, Cj)
+
+----------------------------------------------------------------------
+
+Forward Chaining
+
+function PL-FC-ENTAILS (KB, q) returns true or false
+	inputs: KB, q(query)
+	local variables: count, a table indexed by clause, init num of premises
+					 inferred, a table indexed by symbol, each init false
+					 agenda, a list of symbols, init with symbols true in KB
+	while agenda is not empty do
+		p <- pop(agenda)
+		if ~inferred[p] do    // avoid repeat
+			inferred[p] <- true
+			for each Horn clause c that p appear in whose premise, do
+				count[c] --
+				if count[c] = 0 then do
+					if HEAD[c] = q then return true
+					push(HEAD[c], agenda)
+	return false
+
+----------------------------------------------------------------------
+
+Backward Chaining
+function PL-BC-Entails(KB, goals) returns true or false 
+	inputs: KB, 
+			goals, a list of symbols, initially containing only the query 
+	
+	if goals is empty then return true
+	q := First(goals)
+    foreach clause(p1∧...∧pn ⇒q)in KB
+    	if PL-BC-Entails(KB, [p1 ,..., pn])
+    	then return true 
+    return false
+
+
+	
